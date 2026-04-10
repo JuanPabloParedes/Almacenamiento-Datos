@@ -1,8 +1,10 @@
 from pydantic import BaseModel
+from datetime import date, time
 
 class ReservaCreate(BaseModel):
-    usuario_id: int
-    sala_id: int
-    fecha: str
-    hora_inicio: str
-    hora_fin: str
+    idUsuario: int
+    idSala: int
+    idUsuarioResponsable: int
+    fecha: date
+    horaInicio: time
+    horaFin: time

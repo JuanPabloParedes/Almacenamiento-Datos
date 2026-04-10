@@ -1,8 +1,5 @@
 from fastapi import FastAPI
-from .database import Base, engine
-from .routes import usuarios, salas, reservas
-
-Base.metadata.create_all(bind=engine)
+from .Routes import usuarios, salas, reservas
 
 app = FastAPI(title="API Reservas")
 
