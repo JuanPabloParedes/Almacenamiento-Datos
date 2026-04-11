@@ -4,7 +4,8 @@ from datetime import date, time
 class ReservaCreate(BaseModel):
     idUsuario: int
     idSala: int
-    idUsuarioResponsable: int
     fecha: date
-    horaInicio: time
-    horaFin: time
+    hora_inicio: time
+    hora_fin: time
+    tipo_evento: str
+    descripcion: str

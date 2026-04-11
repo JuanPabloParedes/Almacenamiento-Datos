@@ -3,66 +3,48 @@ from .database import Base
 
 
 class Facultad(Base):
-    __tablename__ = "facultad"
+    __tablename__ = "Facultad"
 
     idFacultad = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(50))
+    nombre = Column(String(100))
+    descripciones = Column(Text)
 
 
 class Usuario(Base):
-    __tablename__ = "usuario"
+    __tablename__ = "Usuario"
 
     idUsuario = Column(Integer, primary_key=True, index=True)
-    codigoUsuario = Column(String(20), unique=True)
-    nombreCompleto = Column(String(50))
-    email = Column(String(50), unique=True)
+    idFacultad = Column(Integer, ForeignKey("Facultad.idFacultad"))
+    nombre_completo = Column(String(100))
+    correo_institucional = Column(String(255), unique=True)
     rol = Column(Enum('Docente', 'Secretaria'))
     estado = Column(Enum('Activo', 'Inactivo'))
-    idFacultad = Column(Integer, ForeignKey("facultad.idFacultad"))
 
 
 class Sala(Base):
-    __tablename__ = "sala"
+    __tablename__ = "Sala"
 
     idSala = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(50))
-    estado = Column(Enum('Habilitada', 'Inhabilitada'))
+    idFacultad = Column(Integer, ForeignKey("Facultad.idFacultad"))
+    codigo_sala = Column(String(100))
+    nombre = Column(String(100))
+    estado = Column(Enum('Habilitada', 'Deshabilitada'))
     observaciones = Column(Text)
-    idFacultad = Column(Integer, ForeignKey("facultad.idFacultad"))
 
 
 class Reserva(Base):
-    __tablename__ = "reserva"
+    __tablename__ = "Reserva"
 
     idReserva = Column(Integer, primary_key=True, index=True)
+    idSala = Column(Integer, ForeignKey("Sala.idSala"))
+    idUsuario = Column(Integer, ForeignKey("Usuario.idUsuario"))
+
     fecha = Column(Date)
-    horaInicio = Column(Time)
-    horaFin = Column(Time)
+    hora_inicio = Column(Time)
+    hora_fin = Column(Time)
+
     estado = Column(Enum('Activa', 'Cancelada', 'Ajustada'))
-    fechaYHoraCreacion = Column(DateTime)
-    fechaYHoraModificacion = Column(DateTime)
-    idUsuario = Column(Integer, ForeignKey("usuario.idUsuario"))
-    idSala = Column(Integer, ForeignKey("sala.idSala"))
-    idUsuarioResponsable = Column(Integer, ForeignKey("usuario.idUsuario"))
+    fecha_creacion = Column(DateTime)
 
-
-class RecursoDisponible(Base):
-    __tablename__ = "recursoDisponible"
-
-    idRecurso = Column(Integer, primary_key=True, index=True)
-    tipo = Column(Enum('Mobiliario', 'Audiovisual'))
-    nombre = Column(String(50))
-    idSala = Column(Integer, ForeignKey("sala.idSala"))
-
-
-class RegistroModificacion(Base):
-    __tablename__ = "registroModificacion"
-
-    idModificacion = Column(Integer, primary_key=True, index=True)
-    idEntidadModificada = Column(Integer)
-    entidad = Column(Enum('Sala', 'Reserva'))
-    tipo = Column(Text)
-    fecha = Column(Date)
-    hora = Column(Time)
+    tipo_evento = Column(Enum('Academica', 'Administrativa'))
     descripcion = Column(Text)
-    idUsuario = Column(Integer, ForeignKey("usuario.idUsuario"))
