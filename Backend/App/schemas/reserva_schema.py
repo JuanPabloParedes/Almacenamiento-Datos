@@ -1,29 +1,18 @@
-from pydantic import BaseModel
-from datetime import date, time, datetime
+from pydantic import BaseModel, Field
+from datetime import date, time
+from typing import Optional
 
-class ReservaBase(BaseModel):
-    idSala: int
-    idUsuario: int
-    fecha: date
-    hora_inicio: time
-    hora_fin: time
-    tipo_evento: str
-    descripcion: str
 
-class ReservaCreate(ReservaBase):
-    pass
+class ReservaCreate(BaseModel):
+    idUsuario: int = Field(..., example=1)
+    idSala: int = Field(..., example=1)
 
-class ReservaUpdate(BaseModel):
-    hora_inicio: time | None = None
-    hora_fin: time | None = None
-    tipo_evento: str | None = None
-    descripcion: str | None = None
-    estado: str | None = None
+    fecha: date = Field(..., example="2026-04-20")
 
-class ReservaResponse(ReservaBase):
-    idReserva: int
-    estado: str
-    fecha_creacion: datetime
+    hora_inicio: time = Field(..., example="08:00:00")
+    hora_fin: time = Field(..., example="10:00:00")
 
-    class Config:
-        from_attributes = True
+    tipo_evento: str = Field(..., example="Academica")
+    descripcion: Optional[str] = Field(None, example="Clase de bases de datos")
+
+    estado: Optional[str] = Field("Activa", example="Activa")
