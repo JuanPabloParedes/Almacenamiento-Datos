@@ -1,7 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+from app.schemas.usuario_schema import UsuarioCreate
+from app.services.usuario_service import crear_usuario
+from db.database import get_db
 
-@router.get("/")
-def listar_usuarios():
-    return {"msg": "Lista de usuarios"}
+router = APIRouter()
+
+
+@router.post("/usuarios")
+def crear(data: UsuarioCreate, db: Session = Depends(get_db)):
+    return crear_usuario(data, db)
