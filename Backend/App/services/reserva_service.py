@@ -1,15 +1,17 @@
 from datetime import datetime, time
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
 from app.models.reserva import Reserva
 
 
-def crear_reserva(data, db):
+def crear_reserva(data, db: Session):
 
     if data.hora_inicio >= data.hora_fin:
-        raise HTTPException(status_code=400, detail="Hora inválida")
+        raise HTTPException(400, "Hora inválida")
 
     if data.hora_inicio < time(7, 0) or data.hora_fin > time(21, 30):
-        raise HTTPException(status_code=400, detail="Fuera de horario")
+        raise HTTPException(400, "Fuera de horario")
 
     existe = db.query(Reserva).filter(
         Reserva.idSala == data.idSala,
@@ -20,16 +22,16 @@ def crear_reserva(data, db):
     ).first()
 
     if existe:
-        raise HTTPException(status_code=400, detail="Reserva solapada")
+        raise HTTPException(400, "Reserva solapada")
 
     nueva = Reserva(
+        idSala=data.idSala,
+        idUsuario=data.idUsuario,
         fecha=data.fecha,
         hora_inicio=data.hora_inicio,
         hora_fin=data.hora_fin,
         estado="Activa",
         fecha_creacion=datetime.now(),
-        idUsuario=data.idUsuario,
-        idSala=data.idSala,
         tipo_evento=data.tipo_evento,
         descripcion=data.descripcion
     )
@@ -39,3 +41,25 @@ def crear_reserva(data, db):
     db.refresh(nueva)
 
     return nueva
+
+
+def listar_reservas(db: Session):
+    return db.query(Reserva).all()
+
+
+def obtener_reserva(id: int, db: Session):
+    reserva = db.query(Reserva).filter(Reserva.idReserva == id).first()
+    if not reserva:
+        raise HTTPException(404, "No encontrada")
+    return reserva
+
+
+def eliminar_reserva(id: int, db: Session):
+    reserva = db.query(Reserva).filter(Reserva.idReserva == id).first()
+    if not reserva:
+        raise HTTPException(404, "No encontrada")
+
+    db.delete(reserva)
+    db.commit()
+
+    return {"mensaje": "Eliminada"}
